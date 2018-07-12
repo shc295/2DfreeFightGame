@@ -1,9 +1,13 @@
 package com.example.shuo.a2dfightgame;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -19,6 +23,12 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
     private GameThread gameThread;
 
     private ChibiCharacter chibi1;
+
+    //background image
+    private Bitmap background;
+    private Rect rect;
+    private int dWidth, dHeight;
+
 
     public GameSurface(Context context)  {
         super(context);
@@ -39,7 +49,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void draw(Canvas canvas)  {
         super.draw(canvas);
-
+        canvas.drawBitmap(background,null,rect,null);
         this.chibi1.draw(canvas);
     }
 
@@ -47,6 +57,13 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         Bitmap chibiBitmap1 = BitmapFactory.decodeResource(this.getResources(),R.drawable.chibi1);
+        background = BitmapFactory.decodeResource(this.getResources(),R.drawable.bkg);
+        Display display = ((Activity)getContext()).getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        dWidth = size.x;
+        dHeight = size.y;
+        rect = new Rect(0,0,dWidth,dHeight);
         this.chibi1 = new ChibiCharacter(this,chibiBitmap1,100,50);
 
         this.gameThread = new GameThread(this,holder);
