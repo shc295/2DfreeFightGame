@@ -15,6 +15,6 @@ public class MainActivity extends Activity {
 
         //setNoTitle
         this.requestWindowFeature(1);
-        this.setContentView(new GameSurface(this));
+        setContentView(new GameSurface(this));
     }
 }

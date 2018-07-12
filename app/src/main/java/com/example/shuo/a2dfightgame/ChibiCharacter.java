@@ -22,7 +22,7 @@ public class ChibiCharacter extends GameObject {
     private Bitmap[] topToBottoms;
     private Bitmap[] bottomToTops;
 
-    public static final float VELOCITY = 0.5f;
+    public static final float VELOCITY = 1.0f;
 
     private int movingVectorX = 10;
     private int movingVectorY = 15;
