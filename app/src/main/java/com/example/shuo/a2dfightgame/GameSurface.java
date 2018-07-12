@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.Display;
@@ -26,9 +27,11 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
 
     //background image
     private Bitmap background;
-    private Rect rect;
+    private Bitmap bkgReverse;
     private int dWidth, dHeight;
-
+    private boolean reverseBKG = false;
+    int dBkg = 2;
+    int bgrScroll=0;
 
     public GameSurface(Context context)  {
         super(context);
@@ -49,7 +52,25 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void draw(Canvas canvas)  {
         super.draw(canvas);
-        canvas.drawBitmap(background,null,rect,null);
+        Rect fromRect1 = new Rect(0,0,dWidth-bgrScroll,dHeight);
+        Rect toRect1 = new Rect(bgrScroll,0,dWidth,dHeight);
+
+        Rect fromRect2 = new Rect(dWidth-bgrScroll,0,dWidth,dHeight);
+        Rect toRect2 = new Rect(0,0,bgrScroll,dHeight);
+        if (!reverseBKG) {
+            canvas.drawBitmap(background, fromRect1, toRect1, null);
+            canvas.drawBitmap(bkgReverse, fromRect2, toRect2, null);
+        }
+        else{
+            canvas.drawBitmap(background, fromRect2, toRect2, null);
+            canvas.drawBitmap(bkgReverse, fromRect1, toRect1, null);
+        }
+
+        if ( (bgrScroll += dBkg) >= dWidth) {
+            bgrScroll = 0;
+            reverseBKG = !reverseBKG;
+        }
+
         this.chibi1.draw(canvas);
     }
 
@@ -63,7 +84,10 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         display.getSize(size);
         dWidth = size.x;
         dHeight = size.y;
-        rect = new Rect(0,0,dWidth,dHeight);
+        background = Bitmap.createScaledBitmap(background,dWidth,dHeight,true);
+        Matrix matrix = new Matrix();  //Like a frame or mould for an image.
+        matrix.setScale(-1, 1); //Horizontal mirror effect.
+        bkgReverse = Bitmap.createBitmap(background, 0, 0, dWidth, dHeight, matrix, true);
         this.chibi1 = new ChibiCharacter(this,chibiBitmap1,100,50);
 
         this.gameThread = new GameThread(this,holder);
